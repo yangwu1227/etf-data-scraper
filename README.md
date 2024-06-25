@@ -4,7 +4,7 @@ This is a Python 3 based daily scraper that collects data on actively listed ETF
 
 The infrasturcture of the scraper includes:
 
-* **Amazon EventBridge**: Triggers a Lambda function to run daily at 5:00 PM EST / 4:00 PM CST after the market closes.
+* **Amazon EventBridge**: Triggers a Lambda function to run daily at 5:00 PM EST / 4:00 PM CST on weekdays after the market closes.
 * **AWS Lambda**: Starts an AWS Fargate task, which runs the containerized application code.
 * **AWS Fargate**: Executes the application code to collect and process ETF data, then stores the data in an S3 bucket as either a Parquet file or a CSV file.
 
@@ -85,14 +85,14 @@ $ poetry install
 To test run the code locally, create a `.env` file in the root of the project directory with the following environment variables:
 
 ```bash
-API_KEY
-S3_BUCKET
-IPO_DATE
-MAX_ETFS
-PARQUET
+API_KEY=your_alpha_vantage_api_key
+S3_BUCKET=your_s3_bucket_name
+IPO_DATE=threshold_for_etf_ipo_date
+MAX_ETFS=maximum_number_of_etfs_to_scrape
+PARQUET=True
 ```
 
-We can also set `ENV` to `dev` in the `.env` file to run the scraper in dev mode when running the entrypoing script `main.py` locally. Just ensure that this environment variable is removed from `.env` before uploading it to S3 for production.
+Set `ENV` to `dev` in the `.env` file to run the scraper in `dev` mode when running the entrypoint `main.py` locally. Ensure that this environment variable is **removed** from `.env` before uploading it to S3 for production.
 
 Details on these environment variables can be found in the [Modules](https://www.kenwuyang.com/en/post/etf-data-scraping-with-aws-lambda-aws-fargate-and-alpha-vantage-yahoo-finance-apis/#modules) subsection of the blog post.
 
