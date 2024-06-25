@@ -96,6 +96,20 @@ Set `ENV` to `dev` in the `.env` file to run the scraper in `dev` mode when runn
 
 Details on these environment variables can be found in the [Modules](https://www.kenwuyang.com/en/post/etf-data-scraping-with-aws-lambda-aws-fargate-and-alpha-vantage-yahoo-finance-apis/#modules) subsection of the blog post.
 
+### Secrets 
+
+The workflows require the following secrets:
+
+* `AWS_GITHUB_ACTIONS_ROLE_ARN`: The ARN of the IAM role that GitHub Actions assumes to deploy to AWS.
+
+* `AWS_REGION`: The AWS region where the resources are deployed.
+
+* `ECR_REPOSITORY`: The name of the ECR repository where the Docker image is stored.
+
+* `S3_BUCKET`: The name of the S3 bucket where the ETF data is stored.
+
+* `LAMBDA_FUNCTION`: The name of the Lambda function that triggers the Fargate task.
+
 ### Set Up AWS CLI
 
 Ensure that the AWS CLI is installed on the local machine and that it is configured with the necessary credentials. Follow the instructions in the [AWS CLI Documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
