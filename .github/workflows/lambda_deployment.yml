@@ -1,0 +1,47 @@
+name: Deploy Lambda Function
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - lambda_function.py
+  workflow_dispatch:
+
+permissions:
+  id-token: write # Required for requesting the Json Web Token (JWT)
+  contents: read # Required for actions/checkout
+
+jobs:
+  update-lambda:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      id: checkout-code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials from OIDC
+      id: configure-aws-credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        audience: sts.amazonaws.com
+        aws-region: ${{ secrets.AWS_REGION }}
+        role-to-assume: ${{ secrets.AWS_GITHUB_ACTION_ROLE_ARN }}
+        role-session-name: DeployLambdaFunction
+
+    - name: Zip Lambda function
+      id: zip-lambda
+      run: zip -r lambda_function.zip ./lambda_function.py
+
+    - name: Upload to S3
+      id: upload-s3
+      run: aws s3 cp lambda_function.zip s3://${{ secrets.S3_BUCKET }}/lambda_function.zip
+
+    - name: Update Lambda function code
+      id: update-lambda
+      run: |
+        aws lambda update-function-code \
+          --function-name ${{ secrets.LAMBDA_FUNCTION }} \
+          --s3-bucket ${{ secrets.S3_BUCKET }} \
+          --s3-key lambda_function.zip

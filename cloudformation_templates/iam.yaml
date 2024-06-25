@@ -1,0 +1,197 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create IAM roles and policies for Lambda, ECS, and GitHub Actions with GitHub OIDC integration.
+
+Parameters:
+  S3BucketName:
+    Type: String
+    Description: Name of the S3 bucket
+  ECRRepoName:
+    Type: String
+    Description: Name of the ECR repository
+  ECRRepoArn:
+    Type: String
+    Description: ARN of the ECR repository
+  GithubUsername:
+    Type: String
+    Description: GitHub username
+  GithubRepoName:
+    Type: String
+    Description: GitHub repository name
+
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role # Lambda will assume this role to iteract with other AWS services
+    Properties: 
+      RoleName: !Sub ${AWS::StackName}-lambda-execution-role
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - Effect: Allow
+            Principal: 
+              Service: lambda.amazonaws.com
+            Action: 
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: LambdaLogPolicy # Lambda needs this policy to write logs to CloudWatch
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*
+        - PolicyName: LambdaECSPolicy # Lambda needs this policy to run ECS tasks
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecs:RunTask
+                  - ecs:DescribeTaskDefinition
+                Resource: "*"
+        - PolicyName: LambdaIAMPolicy # Lambda needs this policy to pass the ECSTaskRole to ECS
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource: 
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/${AWS::StackName}-ecs-execution-role # This should match the RoleName of ECSExecutionRole below
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/${AWS::StackName}-ecs-task-role # This should match the RoleName of ECSTaskRole below
+
+  ECSExecutionRole:
+    Type: AWS::IAM::Role # ECS will assume this role to interact with other AWS services
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-ecs-execution-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ECSExecutionPolicy # ECS needs this policy to pull images from the ECR repository and write logs to CloudWatch
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - ecr:BatchCheckLayerAvailability
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - logs:CreateLogGroup
+                Resource:
+                  - !Ref ECRRepoArn
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/ecs/*
+              - Effect: Allow # This is needed to allow ECS to get the environment file from S3
+                Action:
+                  - s3:GetObject
+                Resource: !Sub arn:aws:s3:::${S3BucketName}/*
+              - Effect: "Allow" # This is needed to allow ECS to log into ECR
+                Action:
+                  - ecr:GetAuthorizationToken
+                Resource: "*"
+
+  ECSTaskRole:
+    Type: AWS::IAM::Role # The Fargate task will assume this role to interact with S3
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-ecs-task-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ECSTaskPolicy # The Fargate task needs this policy to upload scraped data to S3
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource: !Sub arn:aws:s3:::${S3BucketName}/*
+
+  GitHubOIDCProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com # The URL of the OIDC identity provider (IdP) to trust
+      ClientIdList:
+        - "sts.amazonaws.com" # The list of client IDs (also known as audiences) that are allowed to authenticate using the OIDC provider
+      ThumbprintList:
+        - "1c58a3a8518e8759bf075b76b750d4f2df264fcd" # https://github.blog/changelog/2023-06-27-github-actions-update-on-oidc-integration-with-aws/
+        - "6938fd4d98bab03faadb97b34396831e3780aea1"
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-github-oidc-provider
+
+  GithubActionsRole:
+    Type: AWS::IAM::Role # Create the role that will be assumed by the GitHub Actions workflows
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-github-actions-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GitHubOIDCProvider
+            Action: "sts:AssumeRoleWithWebIdentity"
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub repo:${GithubUsername}/${GithubRepoName}:ref:refs/heads/main # Limit the role to the GitHub repository and the main branch
+      Policies:
+        - PolicyName: GithubActionsPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow # Required for the IAM user to update the lambda function code
+                Action:
+                  - lambda:UpdateFunctionCode
+                  - lambda:GetFunction
+                Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*
+              - Effect: Allow # Required for the IAM user to push the docker image to ECR
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:CompleteLayerUpload
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                Resource: !Ref ECRRepoArn
+              - Effect: Allow # Required for the IAM user to log into ECR
+                Action:
+                  - ecr:GetAuthorizationToken
+                Resource: "*"
+              - Effect: "Allow" # Required to zip lambda function to S3 and update the lambda function from S3
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource: !Sub arn:aws:s3:::${S3BucketName}/*
+
+Outputs:
+  LambdaExecutionRoleArn:
+    Description: ARN of the Lambda execution role
+    Value: !GetAtt LambdaExecutionRole.Arn
+
+  ECSExecutionRoleArn:
+    Description: ARN of the ECS execution role
+    Value: !GetAtt ECSExecutionRole.Arn
+
+  ECSTaskRoleArn:
+    Description: ARN of the ECS task role
+    Value: !GetAtt ECSTaskRole.Arn
+
+  GithubActionsRoleArn:
+    Description: ARN of the GitHub Actions role
+    Value: !GetAtt GithubActionsRole.Arn

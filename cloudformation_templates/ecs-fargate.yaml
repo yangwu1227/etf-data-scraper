@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creates an ECS Fargate cluster, task definition, and service.
+
+Parameters:
+  # ECR parameters
+  ECRRepoName:
+    Type: String
+    Description: Name of the ECR repository
+    
+  # IAM role parameters
+  ECSExecutionRoleArn:
+    Type: String
+    Description: ARN of the ECS execution role
+  ECSTaskRoleArn:
+    Type: String
+    Description: ARN of the ECS task role
+
+  # Task definition parameters
+  CpuArchitecture:
+    Type: String
+    Description: The CPU architecture of the task
+    Default: X86_64
+  OperatingSystemFamily:
+    Type: String
+    Description: The operating system family of the task 
+    Default: LINUX
+  Cpu:
+    Type: Number
+    Description: The number of CPU units to reserve for the container
+    Default: 1024
+  Memory:
+    Type: Number
+    Description: The amount of memory (in MiB) to reserve for the container
+    Default: 2048
+  SizeInGiB:
+    Type: Number
+    Description: The amount of ephemeral storage (in GiB) to reserve for the container
+    Default: 21
+
+  # Container definition parameters
+  EnvironmentFileS3Arn:
+    Type: String
+    Description: The S3 ARN of the environment file for the container
+
+Resources:
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub ${AWS::StackName}-cluster
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
+      DefaultCapacityProviderStrategy: # Split evenly between FARGATE and FARGATE_SPOT capacity providers
+        - CapacityProvider: FARGATE
+          Weight: 1 
+        - CapacityProvider: FARGATE_SPOT
+          Weight: 1
+      Configuration:
+        ExecuteCommandConfiguration:
+          Logging: DEFAULT # Use the 'awslogs' configuration in the task definition
+
+  ECSFargateTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-task-definition
+      ExecutionRoleArn: !Ref ECSExecutionRoleArn
+      TaskRoleArn: !Ref ECSTaskRoleArn
+      Cpu: !Ref Cpu
+      Memory: !Ref Memory
+      NetworkMode: awsvpc # Required for Fargate
+      RuntimePlatform:
+        CpuArchitecture: !Ref CpuArchitecture
+        OperatingSystemFamily: !Ref OperatingSystemFamily
+      EphemeralStorage:
+        SizeInGiB: !Ref SizeInGiB
+      RequiresCompatibilities:
+        - FARGATE
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-task
+      ContainerDefinitions:
+        - Name: !Sub ${AWS::StackName}-container
+          Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepoName}:latest
+          Essential: true 
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub /aws/ecs/${AWS::StackName}
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: ecs
+              awslogs-create-group: "true"
+          EnvironmentFiles:
+            - Type: s3
+              Value: !Ref EnvironmentFileS3Arn
+
+Outputs: # Export the ECS Fargate cluster name and task definition family, which will be set as environment variables in the lambda function
+  ECSFargateClusterName:
+    Description: The name of the ECS Fargate cluster to use as an environment variable in the lambda function
+    Value: !Ref ECSCluster
+
+  ECSFargateTaskDefinitionFamily:
+    Description: The name of the ECS Fargate task definition family to use as an environment variable in the lambda function
+    Value: !Sub ${AWS::StackName}-task-definition
+
+  ECSFargateContainerName:
+    Description: The name of the ECS Fargate container to use as an environment variable in the lambda function
+    Value: !Sub ${AWS::StackName}-container

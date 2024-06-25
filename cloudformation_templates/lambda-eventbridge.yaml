@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create a Lambda function and an EventBridge rule to trigger it.
+
+Parameters:
+  # S3, EventBridge, and Lambda parameters
+  S3BucketName:
+    Type: String
+    Description: Name of the S3 bucket
+
+  EventBridgeScheduleExpression:
+    Type: String
+    Description: Schedule expression for the EventBridge rule (e.g., rate(1 day))
+
+  LambdaExecutionRoleArn:
+    Type: String
+    Description: ARN of the Lambda execution role
+
+  # Lambda function parameters
+  Architectures:
+    Type: String
+    Description: The architectures of the Lambda function (e.g., x86_64, arm64)
+    AllowedValues:
+      - x86_64
+      - arm64
+    Default: x86_64
+  Runtime:
+    Type: String
+    Description: The runtime of the Lambda function
+    Default: python3.11
+  Timeout:
+    Type: Number
+    Description: The timeout of the Lambda function in seconds
+    MinValue: 1
+    MaxValue: 900
+    Default: 30 # 30 seconds
+   
+Resources:
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Architectures: 
+        - !Ref Architectures
+      FunctionName: !Sub ${AWS::StackName}-lambda-function
+      Description: Lambda function that runs the ECS Fargate task
+      Handler: lambda_function.lambda_handler # The name of the function that should be executed
+      Role: !Ref LambdaExecutionRoleArn
+      Runtime: !Ref Runtime
+      Timeout: !Ref Timeout
+      Code:
+        S3Bucket: !Ref S3BucketName # The s3 bucket and key that contains the zip file with the lambda function code
+        S3Key: "lambda_function.zip" # This should match the file name in the github workflow
+
+  EventBridgeRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: EventBridge rule that triggers the Lambda function on a schedule
+      Name: !Sub ${AWS::StackName}-eventbridge-rule
+      ScheduleExpression: !Ref EventBridgeScheduleExpression
+      State: ENABLED
+      Targets:
+        - Arn: 
+            Fn::GetAtt:
+              - LambdaFunction
+              - Arn
+          Id: LambdaFunctionTarget
+
+  PermissionForEventsToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref LambdaFunction
+      Principal: events.amazonaws.com
+      SourceArn: 
+        Fn::GetAtt:
+          - EventBridgeRule
+          - Arn

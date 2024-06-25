@@ -1,0 +1,50 @@
+name: Build and push Docker image to Amazon ECR
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - Dockerfile
+      - src/**
+      - '!src/deploy_stack.py' # Exclude the deploy_stack.py file from triggering the workflow
+      - main.py
+      - pyproject.toml
+      - poetry.lock
+  workflow_dispatch:
+
+permissions:
+  id-token: write # Required for requesting the Json Web Token (JWT)
+  contents: read # Required for actions/checkout
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      id: checkout-code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials from OIDC
+      id: configure-aws-credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        audience: sts.amazonaws.com
+        aws-region: ${{ secrets.AWS_REGION }}
+        role-to-assume: ${{ secrets.AWS_GITHUB_ACTION_ROLE_ARN }}
+        role-session-name: BuildAndPushECR
+
+    - name: Log in to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build, tag, and push docker image to Amazon ECR
+      id: build-and-push
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        IMAGE_TAG: latest
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

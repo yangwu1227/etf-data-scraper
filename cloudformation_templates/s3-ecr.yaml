@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create an ECR repository and an S3 bucket.
+
+Parameters:
+  S3BucketName:
+    Type: String
+    Description: Name of the S3 bucket
+  ECRRepoName:
+    Type: String
+    Description: Name of the ECR repository
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref S3BucketName
+
+  ECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref ECRRepoName
+
+Outputs:
+  S3BucketName:
+    Description: Name of the S3 bucket
+    Value: !Ref S3Bucket
+
+  ECRRepoName:
+    Description: Name of the ECR repository
+    Value: !Ref ECRRepository
+
+  ECRRepoArn:
+    Description: ARN of the ECR repository
+    Value: !GetAtt ECRRepository.Arn
