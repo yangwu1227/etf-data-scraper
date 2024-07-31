@@ -15,8 +15,8 @@ def main() -> int:
     if ENV == "dev":
         max_etfs = 20
     elif ENV == "prod":
-        max_etfs = int(os.getenv('MAX_ETFS'))
-    ipo_date = datetime.strptime(os.getenv('IPO_DATE'), "%Y-%m-%d")
+        max_etfs = int(os.getenv('MAX_ETFS', 1))
+    ipo_date = datetime.strptime(os.getenv('IPO_DATE', datetime.today().strftime('%Y-%m-%d')), "%Y-%m-%d")
     etfs_data = query_etf_data(logger=logger, max_etfs=max_etfs, ipo_date=ipo_date)
 
     s3_bucket = os.getenv("S3_BUCKET")
