@@ -39,7 +39,7 @@ def load_parameters(template_file: str, parameters_file: str) -> Dict[str, Union
         raise ValueError(f"No parameters found for template: {template_key}")
     return parameters[template_key]
 
-def create_stack(client: BaseClient, template_file: str, parameters: str) -> Dict[str, str]:
+def create_stack(client: BaseClient, template_file: str, parameters: Dict[str, Union[str, int]]) -> Dict[str, str]:
     """
     Create a CloudFormation stack based on a template and parameters.
 
@@ -135,7 +135,7 @@ def main() -> int:
     logger.info(f"Creating stack with parameters: {parameters}")
     client = boto3.client('cloudformation')
     create_stack(client, args.template_file, parameters)
-    stack_name = parameters['StackName']
+    stack_name = str(parameters['StackName'])
     print(f"Stack creation initiated: {stack_name}")
     # Wait for stack creation to complete
     waiter = client.get_waiter('stack_create_complete')
@@ -146,7 +146,7 @@ def main() -> int:
         return 1
 
     logger.info(f"Getting outputs for stack: {stack_name}")
-    outputs = get_stack_outputs(client, stack_name)
+    outputs = get_stack_outputs(client, stack_name) 
     if outputs is None:
         logger.info("No outputs found for the stack")
         return 0

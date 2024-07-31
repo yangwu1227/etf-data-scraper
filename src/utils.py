@@ -57,4 +57,4 @@ def write_to_s3(data: pd.DataFrame, s3_path: str, parquet: bool = True) -> Dict[
         s3_path += '.csv'
         path = wr.s3.to_csv(df=data, path=s3_path)
 
-    return path
+    return path # type: ignore
