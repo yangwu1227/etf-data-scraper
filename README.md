@@ -105,8 +105,6 @@ The workflows require the following secrets:
 
 ## AWS CLI for Programmatic Deployment
 
-To deploy the resource from the command line, i.e., not from the console, the AWS CLI is required.
-
-Ensure that the AWS CLI is installed on the local machine and that it is configured with the necessary credentials. Follow the instructions in the [AWS CLI Documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
+To deploy the resources programmatically via the [boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html) SDK or via the command line instead of using the AWS console, ensure that the AWS CLI is installed on the local machine and that it is configured with the necessary credentials. Follow the instructions in the [AWS CLI Documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
 
 A simple starting point, though it may violate the principle of least privilege, is to create an IAM user with [programmatic access](https://docs.aws.amazon.com/workspaces-web/latest/adminguide/getting-started-iam-user-access-keys.html) that can assume an IAM role with the [AdministratorAccess](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AdministratorAccess.html) policy attached.
