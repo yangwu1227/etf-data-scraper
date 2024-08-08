@@ -55,7 +55,7 @@ $ poetry config virtualenvs.prefer-active-python true --local
 $ poetry install
 ```
 
-### Method 2: Using `conda` and `poetry` Together
+### Method 3: Using `conda` and `poetry` Together
 
 1. Create a new conda environment named `etf_data_scraper` with Python `3.11`:
 
