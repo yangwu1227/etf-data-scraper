@@ -47,6 +47,9 @@ Resources:
     Type: AWS::ECS::Cluster
     Properties:
       ClusterName: !Sub ${AWS::StackName}-cluster
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
       CapacityProviders:
         - FARGATE
         - FARGATE_SPOT
