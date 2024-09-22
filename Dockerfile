@@ -4,41 +4,33 @@ FROM python:3.11.9-slim-bullseye AS python-base
 ENV PYTHONUNBUFFERED=1 \ 
     # Prevents Python from creating pyc files
     PYTHONDONTWRITEBYTECODE=1 \ 
-    \
-    # Do not cache when installing packages
-    PIP_NO_CACHE_DIR=off \
-    # Suppress pip upgrade warnings
-    PIP_DISABLE_PIP_VERSION_CHECK=on \
-    # See https://github.com/python-poetry/poetry/issues/2200
-    PIP_DEFAULT_TIMEOUT=100 \
-    \
+    # See https://github.com/python-poetry/poetry/issues/2200 and https://github.com/python-poetry/poetry/pull/7081
+    POETRY_REQUESTS_TIMEOUT=30 \
     # Poetry version
     POETRY_VERSION=1.8.3 \
     # Override the poetry installation path
     POETRY_HOME="/opt/poetry" \
     # Create virtualenv inside the project root
     POETRY_VIRTUALENVS_IN_PROJECT=true \
-    \
     # Working directory for the project
     PROJECT_ROOT_PATH="/opt/project" \
     # Virtual environment directory placed in project root
-    VENV_PATH="$PROJECT_ROOT_PATH/.venv"
+    VENV_PATH="/opt/project/.venv"
 
 # Update PATH to include Poetry's bin directory and the virtual environment's bin directory
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 FROM python-base AS builder
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     build-essential 
-
 # Official installation script from https://github.com/python-poetry/install.python-poetry.org
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
 # Copy lock file and pyproject.toml from local project root onto the container
 WORKDIR $PROJECT_ROOT_PATH
 COPY pyproject.toml poetry.lock ./
-
 RUN poetry install --without dev --no-root
 
 FROM python-base AS production 
