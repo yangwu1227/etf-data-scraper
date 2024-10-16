@@ -3,8 +3,8 @@ import sys
 from typing import Dict, List
 
 import awswrangler as wr
-import boto3
 import pandas as pd
+
 
 def setup_logger(name: str) -> logging.Logger:
     """
@@ -24,15 +24,18 @@ def setup_logger(name: str) -> logging.Logger:
 
     if not logger.hasHandlers():
         handler = logging.StreamHandler(sys.stdout)
-        formatter = logging.Formatter('%(asctime)s %(levelname)s %(name)s: %(message)s')
+        formatter = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
     logger.setLevel(logging.INFO)
-    
+
     return logger
 
-def write_to_s3(data: pd.DataFrame, s3_path: str, parquet: bool = True) -> Dict[str, List[str]]:
+
+def write_to_s3(
+    data: pd.DataFrame, s3_path: str, parquet: bool = True
+) -> Dict[str, List[str]]:
     """
     Save the input data to s3 either as a parquet file or csv file.
 
@@ -51,10 +54,10 @@ def write_to_s3(data: pd.DataFrame, s3_path: str, parquet: bool = True) -> Dict[
         A dictionary containing list of all store objects paths
     """
     if parquet:
-        s3_path += '.parquet'
+        s3_path += ".parquet"
         path = wr.s3.to_parquet(df=data, path=s3_path)
     else:
-        s3_path += '.csv'
+        s3_path += ".csv"
         path = wr.s3.to_csv(df=data, path=s3_path)
 
-    return path # type: ignore
+    return path  # type: ignore
