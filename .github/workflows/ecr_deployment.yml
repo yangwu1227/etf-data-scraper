@@ -11,6 +11,7 @@ on:
       - main.py
       - pyproject.toml
       - poetry.lock
+      - .github/workflows/ecr_deployment.yml
   workflow_dispatch:
 
 permissions:

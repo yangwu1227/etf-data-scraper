@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - lambda/**
+      - .github/workflows/lambda_deployment.yml
   workflow_dispatch:
 
 permissions:
