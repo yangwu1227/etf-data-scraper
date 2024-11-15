@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - lambda_function.py
+      - lambda/**
   workflow_dispatch:
 
 permissions:
@@ -30,13 +30,15 @@ jobs:
         role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
         role-session-name: DeployLambdaFunction
 
-    - name: Zip Lambda function
-      id: zip-lambda
-      run: zip -r lambda_function.zip ./lambda_function.py
+    - name: Package and Zip Lambda function
+      id: package-zip-lambda
+      run: |
+        chmod +x ./package_and_zip.sh
+        ./package_and_zip.sh
 
     - name: Upload to S3
       id: upload-s3
-      run: aws s3 cp lambda_function.zip s3://${{ secrets.S3_BUCKET }}/lambda_function.zip
+      run: aws s3 cp ./lambda/lambda_function.zip s3://${{ secrets.S3_BUCKET }}/lambda_function.zip
 
     - name: Update Lambda function code
       id: update-lambda
