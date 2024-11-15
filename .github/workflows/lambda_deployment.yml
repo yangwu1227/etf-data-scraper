@@ -33,8 +33,8 @@ jobs:
     - name: Package and Zip Lambda function
       id: package-zip-lambda
       run: |
-        chmod +x ./package_and_zip.sh
-        ./package_and_zip.sh
+        chmod +x ./lambda/package_and_zip.sh
+        ./lambda/package_and_zip.sh
 
     - name: Upload to S3
       id: upload-s3
