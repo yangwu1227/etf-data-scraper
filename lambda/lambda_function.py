@@ -61,7 +61,7 @@ def lambda_handler(event: Dict[str, str], context: Any) -> None:
 
         logger.info(f"Task started with taskArn: {response}")
 
-    except Exception as error:
+    except botocore.exceptions.ClientError as error:
         logger.error(f"An error occurred while starting the task: {error}")
         raise error
 
@@ -69,6 +69,10 @@ def lambda_handler(event: Dict[str, str], context: Any) -> None:
         logger.error(
             f"The parameters passed to the `run_task` method are invalid: {error}"
         )
+        raise error
+
+    except Exception as error:
+        logger.error(f"An unknown error occurred: {error}")
         raise error
 
     return None
