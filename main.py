@@ -8,7 +8,7 @@ from src.utils import setup_logger, write_to_s3
 def main() -> int:
     logger = setup_logger(name="ETF Dat Scrapper")
 
-    ENV = os.getenv("ENV")
+    ENV = os.getenv("ENV", "dev")
     logger.info(f"Running the task in {ENV} mode")
 
     # If in 'dev' mode, specify a smaller number of etfs to query for testing purposes

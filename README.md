@@ -81,11 +81,9 @@ S3_BUCKET=your_s3_bucket_name
 IPO_DATE=threshold_for_etf_ipo_date
 MAX_ETFS=maximum_number_of_etfs_to_scrape
 PARQUET=True
-# Set to 'dev' to run the scraper in dev mode, ensure that this is removed before uploading to S3
-ENV=dev
 ```
 
-Set `ENV` to `dev` in the `.env` file to run the scraper in `dev` mode when running the entrypoint `main.py` locally. Ensure that this environment variable is **removed** from `.env` before uploading it to S3 for production.
+Set `ENV` to `dev` (i.e., the default) to run the scraper in `dev` mode when running the entrypoint `main.py` locally.
 
 Details on these environment variables can be found in the [Modules](https://www.kenwuyang.com/en/post/etf-data-scraping-with-aws-lambda-aws-fargate-and-alpha-vantage-yahoo-finance-apis/#modules) subsection of the blog post.
 
