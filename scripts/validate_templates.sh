@@ -1,6 +1,7 @@
 #!/bin/bash
 
 read -p "Enter the absolute path to the directory containing CloudFormation template YAML files: " directory
+read -p "Enter the AWS profile name to use for uploading the .env file: " aws_profile
 
 # Check if the directory exists
 if [ ! -d "$directory" ]; then
@@ -13,7 +14,7 @@ for file in "$directory"/*.yaml; do
     echo "Validating template: $file"
     
     # Stack: https://stackoverflow.com/questions/818255/what-does-21-mean
-    validation_output=$(aws cloudformation validate-template --template-body file://"$file" 2>&1)
+    validation_output=$(aws cloudformation validate-template --profile "$aws_profile" --template-body file://"$file" 2>&1)
     
     # Check if the validation was successful
     if [ $? -eq 0 ]; then
