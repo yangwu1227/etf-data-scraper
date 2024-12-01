@@ -7,7 +7,6 @@ on:
     paths:
       - Dockerfile
       - src/**
-      - '!src/deploy_stack.py' # Exclude the deploy_stack.py file from triggering the workflow
       - main.py
       - pyproject.toml
       - poetry.lock
@@ -34,7 +33,7 @@ jobs:
         audience: sts.amazonaws.com
         aws-region: ${{ secrets.AWS_REGION }}
         role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
-        role-session-name: BuildAndPushECR
+        role-session-name: build-and-push
 
     - name: Log in to Amazon ECR
       id: login-ecr

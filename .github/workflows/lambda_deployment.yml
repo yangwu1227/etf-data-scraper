@@ -29,7 +29,7 @@ jobs:
         audience: sts.amazonaws.com
         aws-region: ${{ secrets.AWS_REGION }}
         role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
-        role-session-name: DeployLambdaFunction
+        role-session-name: deploy-lambda
 
     - name: Package and Zip Lambda function
       id: package-zip-lambda

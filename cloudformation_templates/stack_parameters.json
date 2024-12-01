@@ -1,35 +1,35 @@
 {
   "vpc-private.yaml": {
-    "StackName": "etf-kpis-scraper-vpc"
+    "StackName": "etf_kpis_scraper_vpc"
   },
   "s3-ecr.yaml": {
-    "StackName": "etf-kpis-scraper-s3-ecr",
-    "S3BucketName": "etf-kpis-scraper",
-    "ECRRepoName": "etf-kpis-scraper"
+    "StackName": "etf_kpis_scraper_s3_ecr",
+    "S3BucketName": "etf_kpis_scraper",
+    "ECRRepoName": "etf_kpis_scraper"
   },
   "iam.yaml": {
-    "StackName": "etf-kpis-scraper-iam",
-    "S3BucketName": "etf-kpis-scraper",
-    "ECRRepoName": "etf-kpis-scraper",
-    "ECRRepoArn": "arn:aws:ecr:region:account_id:repository/etf-kpis-scraper",
+    "StackName": "etf_kpis_scraper_iam",
+    "S3BucketName": "etf_kpis_scraper",
+    "ECRRepoName": "etf_kpis_scraper",
+    "ECRRepoArn": "arn:aws:ecr:region:account_id:repository/etf_kpis_scraper",
     "GithubUsername": "github_username",
     "GithubRepoName": "github_repo_name"
   },
   "lambda-eventbridge.yaml": {
-    "StackName": "etf-kpis-scraper-lambda-eventbridge",
-    "S3BucketName": "etf-kpis-scraper",
-    "EventBridgeScheduleExpression": "cron(00 22 ? * MON-FRI *)",
-    "LambdaExecutionRoleArn": "arn:aws:iam::region:account_id:role/etf-kpis-scraper-iam-lambda-execution-role",
+    "StackName": "etf_kpis_scraper_lambda_eventbridge",
+    "S3BucketName": "etf_kpis_scraper",
+    "EventBridgeScheduleExpression": "cron(00 22 ? * MON_FRI *)",
+    "LambdaExecutionRoleArn": "arn:aws:iam::region:account_id:role/etf_kpis_scraper_iam_lambda_execution_role",
     "Architectures": "x86_64",
     "Runtime": "python3.11",
     "Timeout": 30
   },
   "ecs-fargate.yaml": {
-    "StackName": "etf-kpis-scraper-ecs-fargate",
-    "ECRRepoName": "etf-kpis-scraper",
-    "ECSExecutionRoleArn": "arn:aws:iam::account_id:role/etf-kpis-scraper-iam-ecs-execution-role",
-    "ECSTaskRoleArn": "arn:aws:iam::account_id:role/etf-kpis-scraper-iam-ecs-task-role",
-    "EnvironmentFileS3Arn": "arn:aws:s3:::etf-kpis-scraper/vars.env",
+    "StackName": "etf_kpis_scraper_ecs_fargate",
+    "ECRRepoName": "etf_kpis_scraper",
+    "ECSExecutionRoleArn": "arn:aws:iam::account_id:role/etf_kpis_scraper_iam_ecs_execution_role",
+    "ECSTaskRoleArn": "arn:aws:iam::account_id:role/etf_kpis_scraper_iam_ecs_task_role",
+    "EnvironmentFileS3Arn": "arn:aws:s3:::etf_kpis_scraper/vars.env",
     "CpuArchitecture": "x86_64",
     "OperatingSystemFamily": "LINUX",
     "Cpu": 1024,
