@@ -6,7 +6,7 @@ from src.utils import setup_logger, write_to_s3
 
 
 def main() -> int:
-    logger = setup_logger(name="ETF Dat Scrapper")
+    logger = setup_logger(name="ETF KPIs Scraper")
 
     ENV = os.getenv("ENV", "dev")
     logger.info(f"Running the task in {ENV} mode")
