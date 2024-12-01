@@ -1,4 +1,4 @@
-# ETF Data Scraper
+# ETF KPIs Scraper
 
 This is a Python 3 based daily scraper that collects data on actively listed ETFs using the [Alpha Vantage](https://www.alphavantage.co/#page-top) and [Yahoo Finance](https://finance.yahoo.com/) APIs (via the [yfinance](https://pypi.org/project/yfinance/) package).
 
@@ -8,7 +8,7 @@ The infrasturcture of the scraper includes:
 * **AWS Lambda**: Starts an AWS Fargate task, which runs the containerized application code.
 * **AWS Fargate**: Executes the application code to collect and process ETF data, then stores the data in an S3 bucket as either a Parquet file or a CSV file.
 
-For a detailed walkthrough of the project, check out the following blog post: [ETF Data Scraping with AWS Lambda, AWS Fargate, and Alpha Vantage & Yahoo Finance APIs](https://www.kenwuyang.com/en/post/etf-data-scraping-with-aws-lambda-aws-fargate-and-alpha-vantage-yahoo-finance-apis/).
+For a detailed walkthrough of the project, check out the following blog post: [Scraping ETF KPIs with AWS Lambda, AWS Fargate, and Alpha Vantage](https://kenwuyang.com/posts/2024_06_22_scraping_etf_kpis_with_aws_lambda_aws_fargate_and_alpha_vantage_yahoo_finance_apis/).
 
 # Project Setup
 
@@ -18,9 +18,9 @@ Fork the repository and clone the forked repository to local machine:
 
 ```bash
 # HTTPS
-$ git clone https://github.com/YOUR_GITHUB_USERNAME/etf-data-scraper.git
+$ git clone https://github.com/YOUR_GITHUB_USERNAME/etf-kpis-scraper.git
 # SSH
-$ git clone git@github/YOUR_GITHUB_USERNAME/etf-data-scraper.git
+$ git clone git@github/YOUR_GITHUB_USERNAME/etf-kpis-scraper.git
 ```
 
 ## Set Up with `poetry`
@@ -57,17 +57,17 @@ $ poetry install --sync
 
 ### Method 3: Using `conda` and `poetry` Together
 
-1. Create a new conda environment named `etf_data_scraper` with Python `3.11`:
+1. Create a new conda environment named `etf_kpis_scraper` with Python `3.11`:
 
 ```bash
-$ yes | conda create --name etf_data_scraper python=3.11
+$ yes | conda create --name etf_kpis_scraper python=3.11
 ```
 
 2. Install the project dependencies (ensure that the `conda` environment is activated):
 
 ```bash
 $ cd path_to_cloned_repository
-$ conda activate etf_data_scraper
+$ conda activate etf_kpis_scraper
 $ poetry install --sync
 ```
 
@@ -85,7 +85,7 @@ PARQUET=True
 
 Set `ENV` to `dev` (i.e., the default) to run the scraper in `dev` mode when running the entrypoint `main.py` locally.
 
-Details on these environment variables can be found in the [Modules](https://www.kenwuyang.com/en/post/etf-data-scraping-with-aws-lambda-aws-fargate-and-alpha-vantage-yahoo-finance-apis/#modules) subsection of the blog post.
+Details on these environment variables can be found in the [Modules](https://kenwuyang.com/posts/2024_06_22_scraping_etf_kpis_with_aws_lambda_aws_fargate_and_alpha_vantage_yahoo_finance_apis/#modules) subsection of the blog post.
 
 ## Workflow Secrets 
 
