@@ -166,3 +166,5 @@ cython_debug/
 
 # Yahoo Finance
 yfinance.cache
+
+cloudformation_templates/stack_parameters_prod.json
