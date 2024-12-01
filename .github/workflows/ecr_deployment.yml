@@ -7,7 +7,6 @@ on:
     paths:
       - Dockerfile
       - src/**
-      - '!src/deploy_stack.py' # Exclude the deploy_stack.py file from triggering the workflow
       - main.py
       - pyproject.toml
       - poetry.lock
