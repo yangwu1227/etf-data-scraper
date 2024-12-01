@@ -1,8 +1,8 @@
 {
-  "vpc-private.yaml": {
+  "vpc_private.yaml": {
     "StackName": "etf_kpis_scraper_vpc"
   },
-  "s3-ecr.yaml": {
+  "s3_ecr.yaml": {
     "StackName": "etf_kpis_scraper_s3_ecr",
     "S3BucketName": "etf_kpis_scraper",
     "ECRRepoName": "etf_kpis_scraper"
@@ -15,7 +15,7 @@
     "GithubUsername": "github_username",
     "GithubRepoName": "github_repo_name"
   },
-  "lambda-eventbridge.yaml": {
+  "lambda_eventbridge.yaml": {
     "StackName": "etf_kpis_scraper_lambda_eventbridge",
     "S3BucketName": "etf_kpis_scraper",
     "EventBridgeScheduleExpression": "cron(00 22 ? * MON_FRI *)",
@@ -24,7 +24,7 @@
     "Runtime": "python3.11",
     "Timeout": 30
   },
-  "ecs-fargate.yaml": {
+  "ecs_fargate.yaml": {
     "StackName": "etf_kpis_scraper_ecs_fargate",
     "ECRRepoName": "etf_kpis_scraper",
     "ECSExecutionRoleArn": "arn:aws:iam::account_id:role/etf_kpis_scraper_iam_ecs_execution_role",

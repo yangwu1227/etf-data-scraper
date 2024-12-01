@@ -46,7 +46,7 @@ Resources:
   ECSCluster:
     Type: AWS::ECS::Cluster
     Properties:
-      ClusterName: !Sub ${AWS::StackName}-cluster
+      ClusterName: !Sub ${AWS::StackName}_cluster
       ClusterSettings:
         - Name: containerInsights
           Value: enabled
@@ -65,7 +65,7 @@ Resources:
   ECSFargateTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Sub ${AWS::StackName}-task-definition
+      Family: !Sub ${AWS::StackName}_task_definition
       ExecutionRoleArn: !Ref ECSExecutionRoleArn
       TaskRoleArn: !Ref ECSTaskRoleArn
       Cpu: !Ref Cpu
@@ -80,9 +80,9 @@ Resources:
         - FARGATE
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-task
+          Value: !Sub ${AWS::StackName}_task
       ContainerDefinitions:
-        - Name: !Sub ${AWS::StackName}-container
+        - Name: !Sub ${AWS::StackName}_container
           Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepoName}:latest
           Essential: true 
           LogConfiguration:
@@ -103,8 +103,8 @@ Outputs: # Export the ECS Fargate cluster name and task definition family, which
 
   ECSFargateTaskDefinitionFamily:
     Description: The name of the ECS Fargate task definition family to use as an environment variable in the lambda function
-    Value: !Sub ${AWS::StackName}-task-definition
+    Value: !Sub ${AWS::StackName}_task_definition
 
   ECSFargateContainerName:
     Description: The name of the ECS Fargate container to use as an environment variable in the lambda function
-    Value: !Sub ${AWS::StackName}-container
+    Value: !Sub ${AWS::StackName}_container

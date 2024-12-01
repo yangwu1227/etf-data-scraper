@@ -10,7 +10,7 @@ Resources:
       EnableDnsHostnames: true 
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-vpc
+          Value: !Sub ${AWS::StackName}_vpc
 
   # Create an internet gateway and attach it to the VPC ------------------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ Resources:
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-igw
+          Value: !Sub ${AWS::StackName}_igw
 
   AttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -41,7 +41,7 @@ Resources:
           - Fn::GetAZs: ""
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-public-subnet-1
+          Value: !Sub ${AWS::StackName}_public_subnet_1
 
   PublicSubnet2:
     Type: AWS::EC2::Subnet 
@@ -55,7 +55,7 @@ Resources:
           - Fn::GetAZs: ""
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-public-subnet-2
+          Value: !Sub ${AWS::StackName}_public_subnet_2
 
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
@@ -69,7 +69,7 @@ Resources:
           - Fn::GetAZs: ""
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-private-subnet-1
+          Value: !Sub ${AWS::StackName}_private_subnet_1
 
   PrivateSubnet2:
     Type: AWS::EC2::Subnet 
@@ -83,7 +83,7 @@ Resources:
           - Fn::GetAZs: ""
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-private-subnet-2
+          Value: !Sub ${AWS::StackName}_private_subnet_2
 
   # Route table for the public subnet and a route to the internet gateway ------------------------------------------------------------
 
@@ -93,7 +93,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-public-rtb
+          Value: !Sub ${AWS::StackName}_public_rtb
 
   PublicRoute:
     Type: AWS::EC2::Route
@@ -114,7 +114,7 @@ Resources:
           - AllocationId
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-nat-1
+          Value: !Sub ${AWS::StackName}_nat_1
 
   NATGateway2:
     Type: AWS::EC2::NatGateway
@@ -126,7 +126,7 @@ Resources:
           - AllocationId
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-nat-2
+          Value: !Sub ${AWS::StackName}_nat_2
 
   # Elastic IPs for the NAT gateways -------------------------------------------------------------------------------------------------
 
@@ -148,7 +148,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-private-rtb-1
+          Value: !Sub ${AWS::StackName}_private_rtb_1
 
   RouteTablePrivate2:
     Type: AWS::EC2::RouteTable
@@ -156,7 +156,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-private-rtb-2
+          Value: !Sub ${AWS::StackName}_private_rtb_2
 
   # Route outbound traffic from the private subnets to the NAT gateways ----------------------------------------------------------------
 
@@ -214,7 +214,7 @@ Resources:
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-sg
+          Value: !Sub ${AWS::StackName}_sg
 
 Outputs: # Export the VPC ID, private subnet IDs, and security group ID for other stacks downstream to use
 

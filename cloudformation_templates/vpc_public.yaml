@@ -10,14 +10,14 @@ Resources:
       EnableDnsHostnames: true 
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-vpc
+          Value: !Sub ${AWS::StackName}_vpc
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-igw
+          Value: !Sub ${AWS::StackName}_igw
 
   AttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -37,7 +37,7 @@ Resources:
           - Fn::GetAZs: ""
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-public-subnet-1
+          Value: !Sub ${AWS::StackName}_public_subnet_1
 
   PublicSubnet2:
     Type: AWS::EC2::Subnet 
@@ -51,7 +51,7 @@ Resources:
           - Fn::GetAZs: ""
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-public-subnet-2
+          Value: !Sub ${AWS::StackName}_public_subnet_2
 
   RouteTable:
     Type: AWS::EC2::RouteTable
@@ -59,7 +59,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-rtb
+          Value: !Sub ${AWS::StackName}_rtb
 
   PublicRoute:
     Type: AWS::EC2::Route
@@ -92,7 +92,7 @@ Resources:
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName}-sg
+          Value: !Sub ${AWS::StackName}_sg
 
 Outputs: # Export the VPC ID, subnet IDs, and security group ID for other stacks downstream to use
 

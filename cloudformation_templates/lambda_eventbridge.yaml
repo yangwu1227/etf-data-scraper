@@ -40,21 +40,21 @@ Resources:
     Properties:
       Architectures: 
         - !Ref Architectures
-      FunctionName: !Sub ${AWS::StackName}-lambda-function
+      FunctionName: !Sub ${AWS::StackName}_lambda_function
       Description: Lambda function that runs the ECS Fargate task
       Handler: lambda_function.lambda_handler # The name of the function that should be executed
       Role: !Ref LambdaExecutionRoleArn
       Runtime: !Ref Runtime
       Timeout: !Ref Timeout
       Code:
-        S3Bucket: !Ref S3BucketName # The s3 bucket and key that contains the zip file with the lambda function code
-        S3Key: "lambda_function.zip" # This should match the file name in the github workflow
+        S3Bucket: !Ref S3BucketName # The S3 bucket and key that contains the zip file with the Lambda function code
+        S3Key: "lambda_function.zip" # This should match the file name in the GitHub workflow
 
   EventBridgeRule:
     Type: AWS::Events::Rule
     Properties:
       Description: EventBridge rule that triggers the Lambda function on a schedule
-      Name: !Sub ${AWS::StackName}-eventbridge-rule
+      Name: !Sub ${AWS::StackName}_eventbridge_rule
       ScheduleExpression: !Ref EventBridgeScheduleExpression
       State: ENABLED
       Targets:
