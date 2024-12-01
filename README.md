@@ -36,7 +36,7 @@ Configure `poetry` to create the virtual environment inside the project's root d
 ```bash
 $ poetry config virtualenvs.in-project true --local
 $ cd path_to_cloned_repository
-$ poetry install
+$ poetry install --sync
 ```
 
 ### Method 2: Using `pyenv` and `poetry` Together
@@ -52,7 +52,7 @@ $ pyenv install 3.11.8
 $ pyenv local 3.11.8
 # Use currently activated Python version to create the virtual environment
 $ poetry config virtualenvs.prefer-active-python true --local
-$ poetry install
+$ poetry install --sync
 ```
 
 ### Method 3: Using `conda` and `poetry` Together
@@ -68,7 +68,7 @@ $ yes | conda create --name etf_data_scraper python=3.11
 ```bash
 $ cd path_to_cloned_repository
 $ conda activate etf_data_scraper
-$ poetry install
+$ poetry install --sync
 ```
 
 ## Create Environment Variables
