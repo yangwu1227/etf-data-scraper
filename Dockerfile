@@ -31,7 +31,7 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 # Copy lock file and pyproject.toml from local project root onto the container
 WORKDIR $PROJECT_ROOT_PATH
 COPY pyproject.toml poetry.lock ./
-RUN poetry install --without dev --no-root
+RUN poetry install --only main --sync --no-root
 
 FROM python-base AS production 
 
