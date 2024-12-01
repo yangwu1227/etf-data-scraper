@@ -23,7 +23,9 @@ def main() -> int:
 
     s3_bucket = os.getenv("S3_BUCKET")
     parquet = os.getenv("PARQUET") == "True"
-    s3_path = f"s3://{s3_bucket}/daily-etf-scraper/etf_data_{datetime.today().strftime('%Y_%m_%d')}"
+    s3_path = (
+        f"s3://{s3_bucket}/daily-kpis/etf_kpis_{datetime.today().strftime('%Y_%m_%d')}"
+    )
     logger.info("Writing scraper data to s3")
     paths = write_to_s3(data=etfs_data, s3_path=s3_path, parquet=parquet)
     logger.info(
