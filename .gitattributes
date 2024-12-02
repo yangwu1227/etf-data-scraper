@@ -1,1 +1,3 @@
 *.ipynb linguist-vendored
+*.hcl linguist-vendored
+*.tf linguist-vendored
