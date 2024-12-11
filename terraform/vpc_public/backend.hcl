@@ -1,4 +1,5 @@
-bucket  = "yang-templates"
+bucket  = "tf-cf-templates"
 key     = "terraform-states/etf-kpis-scraper/vpc-public/terraform.tfstate"
 region  = "us-east-1"
 profile = "admin"
+dynamodb_table = "global_terraform_state_locks"
