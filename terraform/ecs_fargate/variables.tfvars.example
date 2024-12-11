@@ -1,0 +1,13 @@
+region                     = "us-east-1"
+account_id                 = "12345678901"
+profile                    = "default"
+stack_name                 = "stack_name"
+cpu_architecture           = "X86_64"
+operating_system_family    = "LINUX"
+cpu                        = 1024
+memory                     = 2048
+size_in_gib                = 21
+environment_file_s3_arn    = "arn:aws:s3:::resource-bucket-name/vars.env"
+terraform_state_bucket     = "terraform-state-bucket-name"
+iam_terraform_state_key    = "s3/key/to/iam/state"
+s3_ecr_terraform_state_key = "s3/key/to/s3ecr/state"

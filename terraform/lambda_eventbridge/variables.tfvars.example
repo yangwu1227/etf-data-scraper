@@ -1,0 +1,17 @@
+region                     = "us-east-1"
+profile                    = "default"
+stack_name                 = "stack_name
+schedule_expression        = "cron(00 22 ? * MON-FRI *)"
+lambda_code_s3_bucket      = "lambda-function-bucket-name"
+lambda_code_s3_key         = "lambda_function.zip"
+lambda_timeout             = 45
+lambda_handler             = "lambda_function.lambda_handler"
+lambda_runtime             = "python3.11"
+lambda_architecture        = "x86_64"
+terraform_state_bucket     = "terraform-state-bucket-name"
+iam_terraform_state_key    = "s3/key/to/iam/state"
+s3_ecr_terraform_state_key = "s3/key/to/s3ecr/state"
+vpc_terraform_state_key    = "s3/key/to/vpc/state"
+ecs_fargate_state_key      = "s3/key/to/ecs/fargate/state"
+assign_public_ip           = "ENABLED"
+env                        = "prod"

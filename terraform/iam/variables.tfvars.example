@@ -1,0 +1,8 @@
+region                        = "us-east-1"
+account_id                    = "12345678901"
+profile                       = "default"
+stack_name                    = "stack_name"
+s3_ecr_terraform_state_bucket = "terraform-state-bucket-name"
+s3_ecr_terraform_state_key    = "s3/key/to/s3ecr/state"
+github_username               = "github-username"
+github_repo_name              = "github-repo-name"

@@ -1,0 +1,5 @@
+region                     = "us-east-1"
+profile                    = "default"
+stack_name                 = "stack_name"
+retained_image_count       = 1
+untagged_image_expiry_days = 7
