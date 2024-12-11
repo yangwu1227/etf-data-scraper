@@ -62,3 +62,24 @@ variable "s3_ecr_terraform_state_key" {
   description = "S3 key for S3 and ECR Terraform state"
   type        = string
 }
+
+variable "vpc_terraform_state_key" {
+  description = "S3 key for VPC Terraform state"
+  type        = string
+
+}
+
+variable "ecs_fargate_state_key" {
+  description = "S3 key for ECS Fargate Terraform state"
+  type        = string
+}
+
+variable "assign_public_ip" {
+  description = "Assign a public IP to the ECS Fargate task"
+  type        = string
+}
+
+variable "env" {
+  description = "Environment for the stack (e.g., dev, prod)"
+  type        = string
+}

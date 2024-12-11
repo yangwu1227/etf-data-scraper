@@ -13,7 +13,21 @@ resource "aws_lambda_function" "lambda_function" {
   tags = {
     project = var.stack_name
   }
+
+  environment {
+    variables = {
+      ASSIGN_PUBLIC_IP    = var.assign_public_ip
+      ECS_CLUSTER_NAME    = data.terraform_remote_state.ecs_fargate.outputs.ecs_fargate_cluster_name
+      ECS_CONTAINER_NAME  = data.terraform_remote_state.ecs_fargate.outputs.ecs_fargate_container_name
+      ECS_TASK_DEFINITION = data.terraform_remote_state.ecs_fargate.outputs.ecs_fargate_task_definition_family
+      SECURITY_GROUP      = data.terraform_remote_state.vpc.outputs.security_group_id
+      SUBNET_1            = data.terraform_remote_state.vpc.outputs.public_subnet_ids[0]
+      SUBNET_2            = data.terraform_remote_state.vpc.outputs.public_subnet_ids[1]
+      env                 = var.env
+    }
+  }
 }
+
 
 resource "aws_cloudwatch_event_rule" "eventbridge_rule" {
   name                = "${var.stack_name}_eventbridge_rule"
